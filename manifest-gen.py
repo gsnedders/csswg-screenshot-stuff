@@ -37,9 +37,14 @@ def main(filename):
         reader = parse(fp)
         with open(os.path.join(dirname, "reftest.list"), "w") as wfp:
             for test in reader:
-                if is_visual(test) and is_screenshottable(test):
-                    path = build_path(filename, test)
-                    wfp.write("!= %(test)s %(test)s\n" % {"test": path})
+                if is_screenshottable(test):
+                    if is_visual(test):
+                        path = build_path(filename, test)
+                        wfp.write("!= %(test)s %(test)s\n" % {"test": path})
+                    elif test["references"]:
+                        for ref in test["references"].split(","):
+                            path = build_path(filename, test)
+                            wfp.write("!= %(test)s %(test)s\n" % {"test": path})
 
 if __name__ == "__main__":
     import sys
